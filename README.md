@@ -8,4 +8,3 @@ Script for easily replacing a philips hue bulb. Automatically copies the Group/Z
 
 ### Required Libraries
 - requests
-- qhue
