@@ -3,7 +3,6 @@
 
 import requests
 import collections
-from qhue import Bridge
 import time
 from bridge_info import *
 
@@ -17,9 +16,6 @@ if (bridge_ip == "CHANGE ME" or username == "CHANGE ME"):
 requests.packages.urllib3.disable_warnings()  # Hides insecure SSL warnings from Request
 
 api_url = 'https://' + bridge_ip + "/api/" + username + "/"  # Uses info from bridge_info.py
-
-#QHue
-b = Bridge(bridge_ip, username, object_pairs_hook=collections.OrderedDict)
 
 # Print Instructions
 print("---------------------------------   INFO   ---------------------------------")
@@ -40,12 +36,19 @@ print("    - Instructions for how to generate that info is also in the bridge_in
 input("Press Enter to Begin...")
 print()
 
+# Get all info from bridge
+r = requests.request("GET", api_url, verify = False).json()
+
 # Gets names and ID numbers of all lights
 print("Fetching all lights... Please Wait...")
 print()
-print("LIGHT NAME  -  LIGHT ID")
-for num, info in b.lights().items():
-    print("{:16} {}".format(info['name'], num))
+print("LIGHT NAME    -    LIGHT ID")
+
+# Go through and print dictionary of lights, where key is the light ID number, and value is another dictionary of light info
+for id, info in r['lights'].items():
+    # Get key from dict light
+    name = info['name']
+    print("{:20} {}".format(name, id))
 
 # User chooses old light from list
 print()
@@ -53,7 +56,6 @@ old_light_id = input("From list above, enter ID number of the OLD light to be re
 new_light_id = input("From list above, enter ID number of the NEW light that will inherit the old light's properties: ")
 
 # Get name of chosen light
-r = requests.request("GET", api_url, verify = False).json()
 old_light_name = r['lights'][old_light_id]['name']
 new_light_name = r['lights'][new_light_id]['name']
 print()
